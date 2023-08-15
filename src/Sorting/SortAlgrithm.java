@@ -1,7 +1,75 @@
+package Sorting;
+
 public class SortAlgrithm {
 
 
-    //快排， 是否稳定呢
+    //堆排序
+
+    static void heapSort(int [] array) {
+        if (array.length == 0) {
+            return;
+        }
+        for (int i = array.length - 1; i >=0; i --) {
+            heapify(array, i, array.length - 1);
+        }
+        for(int i = array.length - 1; i > 0; i --) {
+            swap(array, 0, i);
+            heapify(array, 0, i - 1);
+        }
+    }
+
+    //该函数的作用：
+    //假定： 两个子树已经是大顶堆了，然后对顶点找到合适的位置, 顶点是i
+    // maxIndex 不超过maxIndex的范围，
+    //参考: https://www.programiz.com/dsa/heap-sort
+    private static void heapify(int [] array, int i, int maxIndex) {
+        int left = i * 2 + 1;
+        int right = i * 2 + 2;
+        int maxValueIndex = i;
+        if (left <= maxIndex && array[i] < array[left]) {
+            maxValueIndex = left;
+        }
+        if (right <= maxIndex && array[maxValueIndex] < array[right]) {
+            maxValueIndex = right;
+        }
+        if (maxValueIndex != i) {
+            swap(array, i, maxValueIndex);
+            heapify(array, maxValueIndex, maxIndex);
+        }
+    }
+
+
+    // 希尔排序, 算法复杂度，Hibbard增量的希尔排序的时间复杂度为O(N的1.5次方)
+    // 由于相同的数可能在不同的分组，所以是不稳定的排序
+
+    static void shellSort(int [] array) {
+        if (array.length <= 1) {
+            return;
+        }
+        int step = array.length / 2;
+        while (step > 0) {
+            for(int i = step; i < array.length; i ++) {
+                int tmp = array[i];
+                int j = i;
+                while (j >= step && array[j - step] > tmp) {
+                    array[j] = array[j - step];
+                    j -= step;
+                }
+                array[j] = tmp;
+            }
+            step = step / 2;
+        }
+    }
+
+
+    //堆排序
+
+
+
+    //桶排序，算法就不写了，主题思想就是分桶。
+
+
+    //快排， 是否稳定呢，不稳定。
     static void quickSort(int [] array) {
         quickSortHelper(array, 0, array.length - 1);
     }
@@ -21,28 +89,18 @@ public class SortAlgrithm {
         if (left >= right) {
             return left;
         }
-        // 5, 3
-        // i = 0, j = 0
-        // 3, 5
-        int i = left;
-        int j = right - 1;
-        int value = array[right];
-        while (i <= j) {
-            while (array[i] <= value && i <= j && i <= right) {
-                i += 1;
-            }
-            while (array[j] >= value && i <= j && j >= 0) {
-                j -= 1;
-            }
-            if (i != j) {
-                int temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
+        int leftWall = left;
+        int pivot = array[right];
+        for (int j = left; j < right; j ++) {
+            if (array[j] < pivot) {
+                swap(array, j, leftWall);
+                leftWall += 1;
             }
         }
-
-        return j;
+        swap(array, leftWall, right);
+        return leftWall;
     }
+
 
     //归并排序, 算法复杂度 O(nlogn)
     //显然是稳定的
@@ -105,9 +163,7 @@ public class SortAlgrithm {
                     minValue = array[j];
                 }
             }
-            int temp = array[i];
-            array[i] = array[minIndex];
-            array[minIndex] = temp;
+            swap(array, i, minIndex);
         }
     }
 
@@ -137,12 +193,16 @@ public class SortAlgrithm {
         for (int i = length - 2; i >= 0; i --) {
             for (int j = 0; j <= i; j ++) {
                 if (array[j] > array[j + 1]) {
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
+                    swap(array, j, j + 1);
                 }
             }
         }
+    }
+
+    static void swap(int [] array, int index1, int index2) {
+        int temp = array[index1];
+        array[index1] = array[index2];
+        array[index2] = temp;
     }
 }
 
